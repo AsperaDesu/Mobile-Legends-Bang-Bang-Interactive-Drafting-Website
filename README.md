@@ -7,6 +7,8 @@
 A web-based Mobile Legends: Bang Bang (MLBB) draft pick simulator built with Flask and SQLite.  
 It allows users to log in, sign up, and experience a realistic hero draft system — ensuring heroes cannot be picked twice or chosen if banned.
 
+### Preview
+
 ![Preview](./static/demo.png)
 
 ---
