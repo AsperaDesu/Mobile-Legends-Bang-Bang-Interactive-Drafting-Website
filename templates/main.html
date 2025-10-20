@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Draft Simulator{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Welcome to Draft Simulator</h1>
+    <p class="lead">Analyze strategies, arrange drafts, and organize your work.</p>
+
+    <!-- Display User Drafts -->
+    <div class="mt-5">
+        <h4>Your Saved Drafts</h4>
+        {% if drafts %}
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex overflow-auto">
+                    {% for draft in drafts %}
+                    <div class="card me-3" style="min-width: 200px;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ draft['draft_name'] }}</h5>
+                            <p class="card-text text-truncate">{{ draft['content'] }}</p>
+                            <a href="{{ url_for('view_draft', draft_id=draft['id']) }}" class="btn btn-primary btn-sm">View</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% if drafts|length > 5 %}
+            <div class="col-12 mt-3">
+                <a href="{{ url_for('all_drafts') }}" class="btn btn-outline-secondary">See More</a>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <p>No drafts yet. Start creating!</p>
+        {% endif %}
+    </div>
+
+    <!-- Create Draft Button -->
+    <div class="row mt-5">
+        <div class="col-md-6 offset-md-3 text-center">
+            <a href="{{ url_for('create_draft') }}" class="btn btn-lg w-100" style="background-color: #CDFAFA; color: #0A323C; border: 2px solid #0AC8B9; font-weight: bold;">Create Draft</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

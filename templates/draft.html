@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}Draft Simulator{% endblock %}
+
+{% block navbarButton %}
+
+    <button id="saveButton" class="btn btn-primary">Save Draft</button>
+
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid transparent draft-page d-flex flex-column py-0">
+    <!-- Header: Team Names and Bans -->
+    <div class="row transparent py-2 flex-wrap justify-content-between">
+        <!-- Team A Section -->
+        <div class="bansA col-6 d-flex flex-column align-items-center p-2">
+            <h3 class="team-title text-primary mb-2">Team A</h3>
+            <div class="bans d-flex justify-content-center flex-wrap w-100">
+                {% for i in range(5) %}
+                <div class="ban-slot position-relative">
+                    {% set hero = draft_data['teamA']['bans'][i] %}
+                    <img src="{{hero['portrait'][0]|default('/static/placeholder.webp')}}" alt="Placeholder" class="ban-image rounded-circle">
+                    <div class="hero-name text-center text-white position-absolute">
+                        {{hero['name']}}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Team B Section -->
+        <div class="col-6 d-flex flex-column align-items-center p-2">
+            <h3 class="team-title text-danger mb-2">Team B</h3>
+            <div class="bans d-flex justify-content-center flex-wrap w-100">
+                {% for i in range(5) %}
+                <div class="ban-slot position-relative">
+                    {% set hero = draft_data['teamB']['bans'][i] %}
+                    <img src="{{hero['portrait'][0]|default('/static/placeholder.webp')}}" alt="Placeholder" class="ban-image rounded-circle">
+                    <div class="hero-name text-center text-white position-absolute">
+                        {{hero['name']}}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Body: Picks and Available Heroes -->
+    <div class="picks row flex-grow-1 justify-content-center align-items-start">
+        <!-- Team A Picks (Blue) -->
+        <div class="col-3 d-flex flex-column align-items-center py-3 mt-2">
+            {% for i in range(5) %}
+            <div class="pick-slot text-white bg-primary mb-2 d-flex align-items-center justify-content-center">
+                {% set hero = draft_data['teamA']['picks'][i] %}
+                <img src="{{hero['portrait'][0]|default('/static/placeholder.webp')}}" alt="Placeholder" class="slot-image rounded-circle">
+                <div class="hero-name text-center text-white position-absolute">
+                    {{hero['name']}}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Available Heroes -->
+        <div class="col-6 d-flex flex-column transparent justify-content-start align-items-center py-3 overflow-auto" tabindex=0>
+            <input type="text" id="hero-search" class="form-control mb-3" placeholder="Search heroes...">
+            <div class="hero-list hero-grid-wrapper border rounded w-100 p-3 d-flex flex-wrap overflow-auto">
+                <div class="hero-grid d-flex justify-content-center flex-wrap p-0">
+                    {% for hero in heroes %}
+                    <div class="hero-card position-relative d-flex justify-content-start flex-column m-2">
+                        <img src="{{ hero.portrait }}" alt="{{ hero.hero_name }}"
+                             class="hero-image rounded-circle"
+                             style="object-fit: cover;">
+                        <div class="hero-name-overlay position-absolute text-white text-center">
+                            {{ hero.hero_name }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Team B Picks (Red) -->
+        <div class="col-3 d-flex flex-column align-items-center py-3 mt-2">
+            {% for i in range(5) %}
+            <div class="pick-slot text-white bg-primary mb-2 d-flex align-items-center justify-content-center">
+                {% set hero = draft_data['teamB']['picks'][i] %}
+                <img src="{{hero['portrait'][0]|default('/static/placeholder.webp')}}" alt="Placeholder" class="slot-image rounded-circle">
+                <div class="hero-name text-center text-white position-absolute">
+                    {{hero['name']}}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    let selectedHero = null;
+
+    // Select all hero cards
+    const heroCards = document.querySelectorAll('.hero-card');
+    heroCards.forEach(card => {
+        card.addEventListener('click', () => {
+            // Ignore if the hero is already picked/banned
+            if (card.classList.contains('unavailable')) return;
+
+            // Remove selection from the previously selected hero
+            if (selectedHero) {
+                selectedHero.classList.remove('selected-hero');
+            }
+
+            // Mark the current hero as selected
+            selectedHero = card;
+            selectedHero.classList.add('selected-hero');
+        });
+    });
+
+    // Select both pick slots and ban slots
+    const slots = document.querySelectorAll('.pick-slot, .ban-slot');
+    slots.forEach(slot => {
+        slot.addEventListener('click', () => {
+            const nameOverlay = slot.querySelector('.hero-name');
+            const slotImage = slot.querySelector('img');
+            const currentHeroName = nameOverlay?.textContent.trim();
+
+            if (selectedHero) {
+                // If a hero is selected, assign it to the slot
+                const heroImage = selectedHero.querySelector('.hero-image').src;
+                const heroName = selectedHero.querySelector('.hero-name-overlay').textContent.trim();
+
+                // If the slot already has a hero, make the previous hero available again
+                if (currentHeroName) {
+                    const previousHeroCard = Array.from(heroCards).find(card =>
+                        card.querySelector('.hero-name-overlay').textContent.trim() === currentHeroName
+                    );
+                    if (previousHeroCard) {
+                        previousHeroCard.classList.remove('unavailable');
+                    }
+                }
+
+                // Update the slot with the new hero
+                if (slotImage) slotImage.src = heroImage;
+                if (nameOverlay) nameOverlay.textContent = heroName;
+
+                // Mark the selected hero as unavailable
+                selectedHero.classList.add('unavailable');
+                selectedHero.classList.remove('selected-hero');
+                selectedHero = null;
+            } else if (currentHeroName) {
+                // If no hero is selected and the slot is clicked, remove the hero from the slot
+                const previousHeroCard = Array.from(heroCards).find(card =>
+                    card.querySelector('.hero-name-overlay').textContent.trim() === currentHeroName
+                );
+                if (previousHeroCard) {
+                    previousHeroCard.classList.remove('unavailable');
+                }
+
+                // Reset the slot to placeholder
+                if (slotImage) slotImage.src = '/static/placeholder.webp';
+                if (nameOverlay) nameOverlay.textContent = '';
+            }
+
+            // Check and hide the nameOverlay if the slot is empty
+            toggleNameOverlayVisibility(slot);
+        });
+    });
+
+    // Function to hide name overlay if the slot is empty
+    // Function to hide name overlay if the slot is empty and mark hero as unavailable if picked/banned
+    function toggleNameOverlayVisibility(slot) {
+        const nameOverlay = slot.querySelector('.hero-name');
+        if (nameOverlay) {
+            const currentHeroName = nameOverlay.textContent.trim();
+
+            // Hide name overlay if the slot is empty
+            if (currentHeroName === '') {
+                nameOverlay.style.display = 'none';
+            } else {
+                nameOverlay.style.display = 'block';
+
+                // Mark the corresponding hero card as unavailable
+                const heroCards = document.querySelectorAll('.hero-card');
+                heroCards.forEach(card => {
+                    const cardHeroName = card.querySelector('.hero-name-overlay')?.textContent.trim();
+                    if (cardHeroName === currentHeroName) {
+                        card.classList.add('unavailable'); // Mark the card as unavailable
+                    }
+                });
+            }
+        }
+    }
+
+
+    // Initial check to hide empty name overlays
+    slots.forEach(slot => {
+        toggleNameOverlayVisibility(slot);
+    });
+
+    // Hero search functionality
+    const searchInput = document.getElementById('hero-search');
+    const heroList = document.querySelector('.hero-list');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase().trim();
+
+            // Clear the hero list
+            heroList.innerHTML = '';
+
+            // Re-add only matching cards
+            heroCards.forEach(card => {
+                const heroName = card.querySelector('.hero-name-overlay').textContent.toLowerCase().trim();
+                if (heroName.includes(query) || query === '') {
+                    heroList.appendChild(card);  // Make sure cards are appended in the correct order
+                }
+            });
+        });
+    }
+
+    // Save draft functionality
+    const saveButton = document.getElementById('saveButton');
+
+    saveButton.addEventListener('click', () => {
+        const draftData = {{ draft_data|tojson }};
+        const draftId = draftData.id || null; // Use `null` if there's no ID
+        console.log(draftId);
+        // Gather draft data
+        const draftName = prompt("Enter a name for this draft:", "Untitled Draft") || "Untitled Draft";
+        const picks = { teamA: [], teamB: [] };
+        const bans = { teamA: [], teamB: [] };
+
+        // Collect picks for both teams (only filled slots, or "None" for empty slots)
+        document.querySelectorAll('.pick-slot').forEach((slot, index) => {
+            const team = index < 5 ? 'teamA' : 'teamB';
+            const heroName = slot.querySelector('.hero-name')?.textContent.trim();
+            if (heroName) {
+                picks[team].push(heroName);
+            } else {
+                picks[team].push("");
+            }
+            console.log(team, ": ", picks[team]);
+        });
+
+        // Collect bans for both teams (only filled slots, or "None" for empty slots)
+        document.querySelectorAll('.ban-slot').forEach((slot, index) => {
+            const team = index < 5 ? 'teamA' : 'teamB';
+            const heroName = slot.querySelector('.hero-name')?.textContent.trim();
+            if (heroName) {
+                bans[team].push(heroName);
+            } else {
+                bans[team].push("");
+            }
+            console.log(team, ": ", bans[team]);
+        });
+
+        fetch('/save_draft', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: draftName,
+                id: draftId,
+                picks: picks,
+                bans: bans,
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Make sure backend sends a message property
+            })
+            .catch(error => {
+                console.error('Error saving draft:', error);
+                alert("Failed to save draft. Please try again.");
+            });
+    });
+});
+</script>
+{% endblock %}

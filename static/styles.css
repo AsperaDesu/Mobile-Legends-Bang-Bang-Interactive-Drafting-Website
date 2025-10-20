@@ -1,0 +1,358 @@
+body {
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(rgba(10, 20, 40, 0.7), rgba(10, 20, 40, 0.7)), url('background-web.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+#form {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-form {
+    background-color: #091428;
+    color: #CDFAFA;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button {
+    background-color: #C8AA6E;
+    color: #F0E6D2;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px !important;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+label {
+    font-weight: bold;
+}
+
+#login {
+    width: 100% !important;
+}
+
+.navbar {
+    background: #333;
+    color: #fff;
+    padding: 10px 20px;
+    flex-shrink: 0;
+}
+
+.draft-page {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.draft-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    width: 100%;
+    max-width: 1200px;
+    background-color: #222;
+    border: 2px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    margin: auto;
+    height: calc(100vh - 120px);
+    max-height: 80vh;
+    overflow: hidden;
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+    gap: 15px;
+    flex-grow: 1;
+}
+
+.bans-row, .picks-column {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.pick-slot, .ban-slot {
+    position: relative;
+    background-color: #555;
+    border: 2px solid #777;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    flex-shrink: 0;
+}
+
+.ban-slot {
+    filter: grayscale(100%);
+    transition: filter 0.3s ease;
+    margin: 0.3rem;
+}
+
+.ban-slot:hover {
+    filter: grayscale(50%);
+}
+
+.ban-slot::before {
+    content: '\f05e';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 600;
+    color: rgba(255, 0, 0, 0.8);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4em;
+    pointer-events: none;
+}
+
+.hero-name {
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 5px;
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.hero-grid-wrapper {
+    max-height: 55vh;
+    overflow-y: auto;
+    background-color: #1a1a1a;
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.username-accent {
+    font-weight: bold !important;
+    font-size: 1.1rem !important;
+    color: #F0E6D2 !important;
+}
+
+.hero-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.hero-grid > * {
+    flex: 0 0 auto;
+}
+
+.hero-card.unavailable {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.hero-card.unavailable:hover {
+    cursor: not-allowed;
+}
+
+.hero-name {
+    visibility: hidden;
+}
+
+.pick-slot:hover .hero-name,
+.ban-slot:hover .hero-name {
+    visibility: visible;
+}
+
+.selected-hero {
+    transform: scale(1.5);
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ban-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.pick-slot {
+    width: calc(((65vh / 5) - 10px) / 2 + 10vw / 2.5 - 10px);
+}
+
+.ban-slot {
+    width: calc((9vh + 7vw) / 2);
+    height: calc((9vh + 7vw) / 2);
+}
+
+.slot-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+.middle-divider {
+    width: 3px;
+    background-color: #666;
+    height: 100%;
+    margin: 0 10px;
+    border-radius: 5px;
+}
+
+.hero-card {
+    position: relative;
+    width: calc(100vw / 25);
+    max-width: 90px;
+    height: calc(100vw / 25);
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.hero-card:hover {
+    transform: scale(1.1);
+}
+
+.hero-image {
+    width: calc(100vw / 25);
+    max-width: 90px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.hero-name-overlay {
+    display: none;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+.hero-card:hover .hero-name-overlay {
+    display: block;
+}
+
+@media (max-width: 1000px) {
+    .draft-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .hero-grid {
+        padding: 1px;
+    }
+
+    .hero-card, .hero-image {
+        height: 50px;
+        width: 50px;
+    }
+}
+
+@media (max-width: 576px) {
+    .draft-page {
+        padding: 10px;
+    }
+
+    .hero-card, .hero-image {
+        width: 40px;
+        height: 40px;
+        padding: 0px !important;
+        margin: 2px !important;
+    }
+}
+
+.dark {
+    background-color: #0A1428;
+    color: #F0E6D2;
+}
+
+.row {
+    background-color: transparent;
+}
+
+.team-title {
+    color: #BE5A04;
+}
+
+.pick-slot, .ban-slot {
+    background-color: rgba(255, 255, 255);
+    border: 3px solid #C1B25F;
+    color: #FFFFFF;
+}
+
+.hero-name, .hero-name-overlay {
+    color: #C1B25F;
+}
+
+.hero-card {
+    background-color: rgba(0, 26, 108, 0.5);
+    border: 1px solid #BE5A04;
+}
+
+button {
+    background-color: #BE5A04;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #5A3A24;
+}
+
+#hero-search {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
+    border: 1px solid #BE5A04;
+}
+
+.alert-message {
+    color: #BE5A04;
+}
+
+.transparent {
+    background-color: rgba(255, 255, 255, 0);
+}
+
+#createDraft {
+    background-color: #010A13;
+    color: #F0E6D2;
+}
+
+.navbar {
+    background-color: #0A323C;
+}
