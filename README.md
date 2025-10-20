@@ -50,3 +50,8 @@ python app.py
 
 Then open your browser and visit:
 http://127.0.0.1:5000/
+
+---
+
+**Author:** Jeffry Anderson  
+*Student Developer & Programmer*
